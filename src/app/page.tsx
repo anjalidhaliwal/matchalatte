@@ -5,10 +5,19 @@ import confetti from 'canvas-confetti';
 import { WorkoutEntry, WorkoutStats } from '@/types/workout';
 import { saveWorkout, getWorkoutHistory, calculateStats } from '@/utils/storage';
 
-interface ApiResponse {
+interface ApiSuccessResponse {
   calories: number;
-  error?: string;
 }
+
+interface ApiErrorResponse {
+  error: string;
+}
+
+type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
+
+const isErrorResponse = (response: ApiResponse): response is ApiErrorResponse => {
+  return 'error' in response;
+};
 
 const matchaConfetti = () => {
   const colors = ['#86a886', '#4a6b4a', '#dcede6'];
@@ -81,8 +90,8 @@ export default function Home() {
 
       const data: ApiResponse = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to calculate calories');
+      if (!response.ok || isErrorResponse(data)) {
+        throw new Error(isErrorResponse(data) ? data.error : 'Failed to calculate calories');
       }
 
       const newWorkout: WorkoutEntry = {

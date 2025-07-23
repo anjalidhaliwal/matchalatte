@@ -66,6 +66,12 @@ interface ErrorResponse {
   error: string;
 }
 
+interface SuccessResponse {
+  calories: number;
+}
+
+type ApiResponse = ErrorResponse | SuccessResponse;
+
 export async function POST(request: Request) {
   // Debug log
   console.log('API Key status:', {
@@ -108,17 +114,18 @@ export async function POST(request: Request) {
 
       const calories = parseInt(completion.choices[0].message.content || "0");
       console.log('Calculated calories:', calories);
-      return NextResponse.json({ calories });
+      return NextResponse.json<SuccessResponse>({ calories });
     } catch (error) {
       console.log('OpenAI API error, using fallback calculation');
       // Use fallback calculation if OpenAI API fails
       const calories = calculateCaloriesLocally(workoutType, duration);
-      return NextResponse.json({ calories });
+      return NextResponse.json<SuccessResponse>({ calories });
     }
   } catch (error) {
     console.error('Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to calculate calories';
     return NextResponse.json<ErrorResponse>(
-      { error: error instanceof Error ? error.message : 'Failed to calculate calories' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
