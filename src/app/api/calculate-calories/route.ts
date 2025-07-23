@@ -43,12 +43,12 @@ const calculateCaloriesLocally = (workoutType: string, duration: number): number
   }
 
   const met = mets[intensity];
-  
+
   // Calorie calculation formula: MET * 3.5 * weight (kg) * time (hours) / 200
   // Using a more representative average weight of 68kg (150 lbs)
   const weightInKg = 68;
   const timeInHours = duration / 60;
-  
+
   // Add a small random variation (±5%) to make it more realistic
   const baseCalories = Math.round(met * 3.5 * weightInKg * timeInHours / 200);
   const variation = baseCalories * 0.05; // 5% variation
@@ -57,12 +57,35 @@ const calculateCaloriesLocally = (workoutType: string, duration: number): number
   return Math.max(finalCalories, 1); // Ensure we never return less than 1 calorie
 };
 
+interface RequestBody {
+  workoutType: string;
+  duration: number;
+}
+
+interface ErrorResponse {
+  error: string;
+}
+
 export async function POST(request: Request) {
+  // Debug log
+  console.log('API Key status:', {
+    exists: !!process.env.OPENAI_API_KEY,
+    length: process.env.OPENAI_API_KEY?.length,
+    preview: process.env.OPENAI_API_KEY?.substring(0, 7)
+  });
+
+  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'sk-your-actual-key-here') {
+    return NextResponse.json<ErrorResponse>(
+      { error: 'OpenAI API key is not configured properly. Please check your .env.local file.' },
+      { status: 500 }
+    );
+  }
+
   try {
-    const { workoutType, duration } = await request.json();
+    const { workoutType, duration }: RequestBody = await request.json();
 
     if (!workoutType || !duration) {
-      return NextResponse.json(
+      return NextResponse.json<ErrorResponse>(
         { error: 'Workout type and duration are required' },
         { status: 400 }
       );
@@ -84,17 +107,18 @@ export async function POST(request: Request) {
       });
 
       const calories = parseInt(completion.choices[0].message.content || "0");
+      console.log('Calculated calories:', calories);
       return NextResponse.json({ calories });
-    } catch (openaiError) {
+    } catch (error) {
       console.log('OpenAI API error, using fallback calculation');
       // Use fallback calculation if OpenAI API fails
       const calories = calculateCaloriesLocally(workoutType, duration);
       return NextResponse.json({ calories });
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error:', error);
-    return NextResponse.json(
-      { error: error?.message || 'Failed to calculate calories' },
+    return NextResponse.json<ErrorResponse>(
+      { error: error instanceof Error ? error.message : 'Failed to calculate calories' },
       { status: 500 }
     );
   }

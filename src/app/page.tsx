@@ -5,6 +5,11 @@ import confetti from 'canvas-confetti';
 import { WorkoutEntry, WorkoutStats } from '@/types/workout';
 import { saveWorkout, getWorkoutHistory, calculateStats } from '@/utils/storage';
 
+interface ApiResponse {
+  calories: number;
+  error?: string;
+}
+
 const matchaConfetti = () => {
   const colors = ['#86a886', '#4a6b4a', '#dcede6'];
   const end = Date.now() + 2000;
@@ -56,11 +61,11 @@ export default function Home() {
       setError('Please enter your name');
       return;
     }
-    
+
     setLoading(true);
     setError(null);
     setCalories(null);
-    
+
     try {
       const response = await fetch('/api/calculate-calories', {
         method: 'POST',
@@ -70,10 +75,11 @@ export default function Home() {
         body: JSON.stringify({
           workoutType,
           duration: parseInt(duration),
+          name,
         }),
       });
-      
-      const data = await response.json();
+
+      const data: ApiResponse = await response.json();
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to calculate calories');
@@ -94,9 +100,9 @@ export default function Home() {
       setStats(calculateStats(updatedHistory));
       setCalories(data.calories);
       matchaConfetti();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error:', error);
-      setError(error.message || 'Something went wrong');
+      setError(error instanceof Error ? error.message : 'Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -104,18 +110,18 @@ export default function Home() {
 
   // Get unique users from history
   const users = ['all', ...new Set(history.map(entry => entry.name))];
-  
+
   // Filter history based on selected user
-  const filteredHistory = selectedUser === 'all' 
-    ? history 
+  const filteredHistory = selectedUser === 'all'
+    ? history
     : history.filter(entry => entry.name === selectedUser);
 
   // Calculate user-specific stats
   const userStats = calculateStats(filteredHistory);
 
   // Calculate averages
-  const avgCaloriesPerWorkout = userStats.totalWorkouts > 0 
-    ? Math.round(userStats.totalCalories / userStats.totalWorkouts) 
+  const avgCaloriesPerWorkout = userStats.totalWorkouts > 0
+    ? Math.round(userStats.totalCalories / userStats.totalWorkouts)
     : 0;
 
   const avgDurationPerWorkout = userStats.totalWorkouts > 0
@@ -130,7 +136,7 @@ export default function Home() {
             <h1 className="text-3xl font-bold text-[#4a6b4a] mb-2">Matcha Fitness</h1>
             <p className="text-[#86a886]">Track your wellness journey ✨</p>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-6 max-w-md mx-auto">
             <div className="relative">
               <label htmlFor="name" className="block text-sm font-medium text-[#4a6b4a] mb-2">
@@ -161,7 +167,7 @@ export default function Home() {
                 required
               />
             </div>
-            
+
             <div className="relative">
               <label htmlFor="duration" className="block text-sm font-medium text-[#4a6b4a] mb-2">
                 For how long? (minutes)
@@ -176,7 +182,7 @@ export default function Home() {
                 required
               />
             </div>
-            
+
             <button
               type="submit"
               disabled={loading}
@@ -193,13 +199,13 @@ export default function Home() {
               ) : '✨ Calculate Calories ✨'}
             </button>
           </form>
-          
+
           {error && (
             <div className="mt-6 p-4 bg-red-50 rounded-xl border border-red-200">
               <p className="text-red-600 text-sm text-center">{error}</p>
             </div>
           )}
-          
+
           {calories !== null && !error && (
             <div className="mt-8 text-center bg-white/70 rounded-2xl p-6 shadow-inner">
               <h2 className="text-lg font-medium text-[#4a6b4a]">You burned approximately</h2>
