@@ -15,8 +15,8 @@ interface ApiErrorResponse {
 
 type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
 
-const isErrorResponse = (response: ApiResponse): response is ApiErrorResponse => {
-  return 'error' in response;
+const isErrorResponse = (response: unknown): response is ApiErrorResponse => {
+  return typeof response === 'object' && response !== null && 'error' in response;
 };
 
 const matchaConfetti = () => {
@@ -88,7 +88,7 @@ export default function Home() {
         }),
       });
 
-      const data: ApiResponse = await response.json();
+      const data = await response.json();
 
       if (!response.ok || isErrorResponse(data)) {
         throw new Error(isErrorResponse(data) ? data.error : 'Failed to calculate calories');
