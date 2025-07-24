@@ -1,82 +1,54 @@
-# 🍵 Matcha Fitness
+# Matcha Latte Fitness Tracker 🍵
 
-A beautiful, matcha-themed fitness tracking app that helps you monitor your workouts and calories burned. Built with Next.js, TypeScript, and Tailwind CSS.
+A delightful fitness tracking app with matcha latte energy! Track your workouts, calculate calories burned, and visualize your fitness journey with a soothing matcha-themed interface.
 
-## ✨ Features
+## Features ✨
 
-- 🎯 Track workouts and calories burned
-- 📊 View detailed statistics and history
-- 👥 Multi-user support
-- 📱 Responsive design
-- 🎨 Beautiful matcha-inspired UI
-- 💾 Local storage for workout history
-- 📈 Workout type breakdown and trends
+- Calculate calories burned for various workout types
+- Track workout history and view statistics
+- Beautiful matcha-themed UI with confetti celebrations
+- Filter history and stats by user
+- View detailed breakdown of workout types and calories
 
-## 🚀 Getting Started
+## Tech Stack 🛠️
+
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- Canvas Confetti
+
+## Getting Started 🚀
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/anjalidhaliwal/matchalatte.git
-   cd matchalatte
-   ```
+```bash
+git clone https://github.com/anjalidhaliwal/matchalatte.git
+cd matchalatte
+```
 
 2. Install dependencies:
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-3. Create a `.env.local` file with your OpenAI API key:
-   ```
-   OPENAI_API_KEY=your_api_key_here
-   ```
+3. Run the development server:
+```bash
+npm run dev
+```
 
-4. Run the development server:
-   ```bash
-   npm run dev
-   ```
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
+## How It Works 🤔
 
-## 🛠️ Built With
+The app uses scientifically-based MET (Metabolic Equivalent of Task) values to calculate calories burned based on:
+- Workout type
+- Duration
+- Intensity (automatically determined by duration)
+- Standard body metrics
 
-- [Next.js](https://nextjs.org/) - React framework
-- [TypeScript](https://www.typescriptlang.org/) - Type safety
-- [Tailwind CSS](https://tailwindcss.com/) - Styling
-- [OpenAI API](https://openai.com/) - AI-powered calorie calculations
+## Contributing 🤝
 
-## 📱 Features in Detail
+Feel free to contribute! Open a pull request or create an issue for bugs/features.
 
-### Workout Tracking
-- Log workouts with name, type, and duration
-- Get AI-powered calorie estimates
-- Beautiful animations and feedback
+## License 📝
 
-### Statistics
-- Total calories burned
-- Average calories per workout
-- Workout type breakdown
-- Individual and global statistics
-
-### User Experience
-- Matcha-themed design
-- Responsive layout
-- Real-time updates
-- Multi-user support
-
-## 🎨 Design
-
-The app features a matcha-inspired color scheme with:
-- Soft, natural greens
-- Frosted glass effects
-- Smooth animations
-- Clean, modern layout
-
-## 📝 License
-
-This project is open source and available under the MIT License.
-
-## 🙏 Acknowledgments
-
-- Inspired by the calming aesthetics of matcha
-- Built with modern web technologies
-- Designed for wellness enthusiasts
+MIT License - feel free to use this project however you'd like!
