@@ -1,45 +1,5 @@
 import { NextResponse } from 'next/server';
 
-const calculateCalories = (workoutType: string, duration: number): number => {
-  const workoutIntensities: { [key: string]: { low: number; moderate: number; high: number } } = {
-    'walking': { low: 2.5, moderate: 3.5, high: 4.5 },
-    'running': { low: 6.0, moderate: 8.0, high: 11.0 },
-    'cycling': { low: 4.0, moderate: 6.0, high: 10.0 },
-    'swimming': { low: 4.5, moderate: 6.0, high: 9.0 },
-    'yoga': { low: 2.0, moderate: 3.0, high: 4.0 },
-    'pilates': { low: 2.5, moderate: 3.0, high: 3.5 },
-    'weightlifting': { low: 3.0, moderate: 4.0, high: 6.0 },
-    'hiit': { low: 6.0, moderate: 8.0, high: 10.0 },
-    'dancing': { low: 3.5, moderate: 4.5, high: 6.0 },
-    'stretching': { low: 1.5, moderate: 2.0, high: 2.5 },
-    'crossfit': { low: 5.0, moderate: 7.0, high: 9.0 },
-    'boxing': { low: 4.0, moderate: 6.0, high: 9.0 },
-    'rowing': { low: 3.5, moderate: 5.5, high: 8.5 },
-    'stair climbing': { low: 4.0, moderate: 6.0, high: 8.0 },
-    'jump rope': { low: 8.0, moderate: 10.0, high: 12.0 },
-  };
-
-  const defaultMets = { low: 3.0, moderate: 4.0, high: 5.0 };
-  const mets = workoutIntensities[workoutType.toLowerCase()] || defaultMets;
-
-  let intensity: 'low' | 'moderate' | 'high';
-  if (duration <= 20) {
-    intensity = 'high';
-  } else if (duration <= 45) {
-    intensity = 'moderate';
-  } else {
-    intensity = 'low';
-  }
-
-  const met = mets[intensity];
-  const weightInKg = 68;
-  const timeInHours = duration / 60;
-  const baseCalories = Math.round(met * 3.5 * weightInKg * timeInHours / 200);
-  const variation = baseCalories * 0.05;
-  const finalCalories = Math.round(baseCalories + (Math.random() * variation * 2 - variation));
-  return Math.max(finalCalories, 1);
-};
-
 interface RequestBody {
   workoutType: string;
   duration: number;
@@ -53,7 +13,29 @@ interface SuccessResponse {
   calories: number;
 }
 
-type ApiResponse = ErrorResponse | SuccessResponse;
+const calculateCalories = (workoutType: string, duration: number): number => {
+  // Base MET values for different workout types
+  const metValues: Record<string, number> = {
+    'walking': 3.5,
+    'running': 8.0,
+    'cycling': 7.5,
+    'swimming': 6.0,
+    'yoga': 2.5,
+    'pilates': 3.0,
+    'weightlifting': 4.0,
+    'hiit': 8.0,
+    'dancing': 4.5
+  };
+
+  // Get base MET value (default to walking if type not found)
+  const baseMet = metValues[workoutType.toLowerCase()] || metValues['walking'];
+  
+  // Calculate calories (assuming 70kg person)
+  // Formula: Calories = MET × Weight (kg) × Time (hours)
+  const timeInHours = duration / 60;
+  const weight = 70; // standard weight assumption
+  return Math.round(baseMet * weight * timeInHours);
+};
 
 export async function POST(request: Request) {
   try {

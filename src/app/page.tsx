@@ -117,6 +117,17 @@ export default function Home() {
     }
   };
 
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { id, value } = e.target;
+    if (id === 'name') {
+      setName(value);
+    } else if (id === 'workoutType') {
+      setWorkoutType(value);
+    } else if (id === 'duration') {
+      setDuration(value);
+    }
+  };
+
   // Get unique users from history
   const users = ['all', ...new Set(history.map(entry => entry.name))];
 
@@ -155,7 +166,7 @@ export default function Home() {
                 type="text"
                 id="name"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={onChange}
                 placeholder="Enter your name"
                 className="block w-full px-4 py-3 rounded-xl border-[#86a886]/30 bg-white/50 focus:border-[#86a886] focus:ring focus:ring-[#86a886]/20 transition-all duration-200 text-[#4a6b4a] placeholder-[#86a886]/50"
                 required
@@ -170,7 +181,7 @@ export default function Home() {
                 type="text"
                 id="workoutType"
                 value={workoutType}
-                onChange={(e) => setWorkoutType(e.target.value)}
+                onChange={onChange}
                 placeholder="e.g., yoga, pilates, dance"
                 className="block w-full px-4 py-3 rounded-xl border-[#86a886]/30 bg-white/50 focus:border-[#86a886] focus:ring focus:ring-[#86a886]/20 transition-all duration-200 text-[#4a6b4a] placeholder-[#86a886]/50"
                 required
@@ -185,7 +196,7 @@ export default function Home() {
                 type="number"
                 id="duration"
                 value={duration}
-                onChange={(e) => setDuration(e.target.value)}
+                onChange={onChange}
                 placeholder="30"
                 className="block w-full px-4 py-3 rounded-xl border-[#86a886]/30 bg-white/50 focus:border-[#86a886] focus:ring focus:ring-[#86a886]/20 transition-all duration-200 text-[#4a6b4a] placeholder-[#86a886]/50"
                 required
