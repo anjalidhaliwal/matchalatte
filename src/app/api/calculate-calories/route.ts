@@ -1,13 +1,6 @@
-import { OpenAI } from 'openai';
 import { NextResponse } from 'next/server';
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-// More accurate MET values based on CDC and research data
-const calculateCaloriesLocally = (workoutType: string, duration: number): number => {
+const calculateCalories = (workoutType: string, duration: number): number => {
   const workoutIntensities: { [key: string]: { low: number; moderate: number; high: number } } = {
     'walking': { low: 2.5, moderate: 3.5, high: 4.5 },
     'running': { low: 6.0, moderate: 8.0, high: 11.0 },
@@ -63,19 +56,6 @@ interface SuccessResponse {
 type ApiResponse = ErrorResponse | SuccessResponse;
 
 export async function POST(request: Request) {
-  console.log('API Key status:', {
-    exists: !!process.env.OPENAI_API_KEY,
-    length: process.env.OPENAI_API_KEY?.length,
-    preview: process.env.OPENAI_API_KEY?.substring(0, 7)
-  });
-
-  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'sk-your-actual-key-here') {
-    return NextResponse.json<ErrorResponse>(
-      { error: 'OpenAI API key is not configured properly. Please check your .env.local file.' },
-      { status: 500 }
-    );
-  }
-
   try {
     const { workoutType, duration }: RequestBody = await request.json();
 
@@ -86,29 +66,8 @@ export async function POST(request: Request) {
       );
     }
 
-    try {
-      const completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: "You are a fitness expert that calculates calories burned during workouts. Provide only the number, no explanation."
-          },
-          {
-            role: "user",
-            content: `Calculate how many calories would be burned during ${duration} minutes of ${workoutType}. Consider intensity and provide a reasonable estimate. Return only the number.`
-          }
-        ]
-      });
-
-      const calories = parseInt(completion.choices[0].message.content || "0");
-      console.log('Calculated calories:', calories);
-      return NextResponse.json<SuccessResponse>({ calories });
-    } catch (error: unknown) {
-      console.log('OpenAI API error, using fallback calculation');
-      const calories = calculateCaloriesLocally(workoutType, duration);
-      return NextResponse.json<SuccessResponse>({ calories });
-    }
+    const calories = calculateCalories(workoutType, duration);
+    return NextResponse.json<SuccessResponse>({ calories });
   } catch (error: unknown) {
     console.error('Error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to calculate calories';
