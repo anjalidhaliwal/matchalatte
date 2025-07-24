@@ -7,13 +7,13 @@ export interface WorkoutEntry {
   timestamp: string;
 }
 
-export interface WorkoutStats {
+export interface WorkoutTypeStats {
+  count: number;
   totalCalories: number;
+}
+
+export interface WorkoutStats {
   totalWorkouts: number;
-  workoutsByType: {
-    [key: string]: {
-      count: number;
-      totalCalories: number;
-    };
-  };
+  totalCalories: number;
+  workoutsByType: Record<string, WorkoutTypeStats>;
 } 

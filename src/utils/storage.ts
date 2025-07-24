@@ -14,25 +14,26 @@ export const getWorkoutHistory = (): WorkoutEntry[] => {
   return history ? JSON.parse(history) : [];
 };
 
-export const calculateStats = (history: WorkoutEntry[]): WorkoutStats => {
+export const calculateStats = (workouts: WorkoutEntry[]): WorkoutStats => {
   const stats: WorkoutStats = {
+    totalWorkouts: workouts.length,
     totalCalories: 0,
-    totalWorkouts: history.length,
-    workoutsByType: {}
+    workoutsByType: {},
   };
 
-  history.forEach(workout => {
+  workouts.forEach((workout) => {
     stats.totalCalories += workout.calories;
 
-    if (!stats.workoutsByType[workout.workoutType]) {
-      stats.workoutsByType[workout.workoutType] = {
+    const type = workout.workoutType.toLowerCase();
+    if (!stats.workoutsByType[type]) {
+      stats.workoutsByType[type] = {
         count: 0,
-        totalCalories: 0
+        totalCalories: 0,
       };
     }
 
-    stats.workoutsByType[workout.workoutType].count += 1;
-    stats.workoutsByType[workout.workoutType].totalCalories += workout.calories;
+    stats.workoutsByType[type].count += 1;
+    stats.workoutsByType[type].totalCalories += workout.calories;
   });
 
   return stats;

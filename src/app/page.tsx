@@ -81,11 +81,11 @@ export default function Home() {
       name,
     };
 
-    console.log('Making API request to:', '/api');
+    console.log('Making API request to:', '/api/calculate');
     console.log('Request body:', requestBody);
 
     try {
-      const response = await fetch('/api', {
+      const response = await fetch('/api/calculate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
