@@ -75,20 +75,29 @@ export default function Home() {
     setError(null);
     setCalories(null);
 
+    const requestBody = {
+      workoutType,
+      duration: parseInt(duration),
+      name,
+    };
+
+    console.log('Making API request to:', '/api/calculate-calories');
+    console.log('Request body:', requestBody);
+
     try {
       const response = await fetch('/api/calculate-calories', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          workoutType,
-          duration: parseInt(duration),
-          name,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (!response.ok || isErrorResponse(data)) {
         throw new Error(isErrorResponse(data) ? data.error : 'Failed to calculate calories');
