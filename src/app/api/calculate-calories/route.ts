@@ -1,4 +1,4 @@
-import { OpenAI, APIError } from 'openai';
+import { OpenAI } from 'openai';
 import { NextResponse } from 'next/server';
 
 // Initialize OpenAI client
@@ -8,13 +8,12 @@ const openai = new OpenAI({
 
 // More accurate MET values based on CDC and research data
 const calculateCaloriesLocally = (workoutType: string, duration: number): number => {
-  // MET values from the 2011 Compendium of Physical Activities
   const workoutIntensities: { [key: string]: { low: number; moderate: number; high: number } } = {
-    'walking': { low: 2.5, moderate: 3.5, high: 4.5 }, // Varying speeds
-    'running': { low: 6.0, moderate: 8.0, high: 11.0 }, // Different paces
-    'cycling': { low: 4.0, moderate: 6.0, high: 10.0 }, // Different intensities
-    'swimming': { low: 4.5, moderate: 6.0, high: 9.0 }, // Different strokes
-    'yoga': { low: 2.0, moderate: 3.0, high: 4.0 }, // Different styles
+    'walking': { low: 2.5, moderate: 3.5, high: 4.5 },
+    'running': { low: 6.0, moderate: 8.0, high: 11.0 },
+    'cycling': { low: 4.0, moderate: 6.0, high: 10.0 },
+    'swimming': { low: 4.5, moderate: 6.0, high: 9.0 },
+    'yoga': { low: 2.0, moderate: 3.0, high: 4.0 },
     'pilates': { low: 2.5, moderate: 3.0, high: 3.5 },
     'weightlifting': { low: 3.0, moderate: 4.0, high: 6.0 },
     'hiit': { low: 6.0, moderate: 8.0, high: 10.0 },
@@ -27,12 +26,9 @@ const calculateCaloriesLocally = (workoutType: string, duration: number): number
     'jump rope': { low: 8.0, moderate: 10.0, high: 12.0 },
   };
 
-  // Get the MET values for the workout type or use moderate defaults
   const defaultMets = { low: 3.0, moderate: 4.0, high: 5.0 };
   const mets = workoutIntensities[workoutType.toLowerCase()] || defaultMets;
 
-  // Determine intensity based on duration
-  // Shorter workouts tend to be higher intensity
   let intensity: 'low' | 'moderate' | 'high';
   if (duration <= 20) {
     intensity = 'high';
@@ -43,18 +39,12 @@ const calculateCaloriesLocally = (workoutType: string, duration: number): number
   }
 
   const met = mets[intensity];
-
-  // Calorie calculation formula: MET * 3.5 * weight (kg) * time (hours) / 200
-  // Using a more representative average weight of 68kg (150 lbs)
   const weightInKg = 68;
   const timeInHours = duration / 60;
-
-  // Add a small random variation (±5%) to make it more realistic
   const baseCalories = Math.round(met * 3.5 * weightInKg * timeInHours / 200);
-  const variation = baseCalories * 0.05; // 5% variation
+  const variation = baseCalories * 0.05;
   const finalCalories = Math.round(baseCalories + (Math.random() * variation * 2 - variation));
-
-  return Math.max(finalCalories, 1); // Ensure we never return less than 1 calorie
+  return Math.max(finalCalories, 1);
 };
 
 interface RequestBody {
@@ -73,7 +63,6 @@ interface SuccessResponse {
 type ApiResponse = ErrorResponse | SuccessResponse;
 
 export async function POST(request: Request) {
-  // Debug log
   console.log('API Key status:', {
     exists: !!process.env.OPENAI_API_KEY,
     length: process.env.OPENAI_API_KEY?.length,
@@ -115,13 +104,12 @@ export async function POST(request: Request) {
       const calories = parseInt(completion.choices[0].message.content || "0");
       console.log('Calculated calories:', calories);
       return NextResponse.json<SuccessResponse>({ calories });
-    } catch (error) {
-      // Log error but use fallback
+    } catch (error: unknown) {
       console.log('OpenAI API error, using fallback calculation');
       const calories = calculateCaloriesLocally(workoutType, duration);
       return NextResponse.json<SuccessResponse>({ calories });
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to calculate calories';
     return NextResponse.json<ErrorResponse>(
