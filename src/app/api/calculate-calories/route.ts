@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 interface RequestBody {
   workoutType: string;
   duration: number;
+  name: string;
 }
 
 interface ErrorResponse {
@@ -34,11 +35,11 @@ const calculateCalories = (workoutType: string, duration: number): number => {
 
 export async function POST(request: Request) {
   try {
-    const { workoutType, duration }: RequestBody = await request.json();
+    const { workoutType, duration, name }: RequestBody = await request.json();
 
-    if (!workoutType || !duration) {
+    if (!workoutType || !duration || !name) {
       return NextResponse.json<ErrorResponse>(
-        { error: 'Workout type and duration are required' },
+        { error: 'Workout type, duration, and name are required' },
         { status: 400 }
       );
     }
