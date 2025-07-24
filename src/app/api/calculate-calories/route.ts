@@ -14,7 +14,6 @@ interface SuccessResponse {
 }
 
 const calculateCalories = (workoutType: string, duration: number): number => {
-  // Base MET values for different workout types
   const metValues: Record<string, number> = {
     'walking': 3.5,
     'running': 8.0,
@@ -27,13 +26,9 @@ const calculateCalories = (workoutType: string, duration: number): number => {
     'dancing': 4.5
   };
 
-  // Get base MET value (default to walking if type not found)
   const baseMet = metValues[workoutType.toLowerCase()] || metValues['walking'];
-  
-  // Calculate calories (assuming 70kg person)
-  // Formula: Calories = MET × Weight (kg) × Time (hours)
   const timeInHours = duration / 60;
-  const weight = 70; // standard weight assumption
+  const weight = 70;
   return Math.round(baseMet * weight * timeInHours);
 };
 
