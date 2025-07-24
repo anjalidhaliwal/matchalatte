@@ -1,4 +1,4 @@
-import { OpenAI } from 'openai';
+import { OpenAI, APIError } from 'openai';
 import { NextResponse } from 'next/server';
 
 // Initialize OpenAI client
@@ -116,8 +116,8 @@ export async function POST(request: Request) {
       console.log('Calculated calories:', calories);
       return NextResponse.json<SuccessResponse>({ calories });
     } catch (error) {
+      // Log error but use fallback
       console.log('OpenAI API error, using fallback calculation');
-      // Use fallback calculation if OpenAI API fails
       const calories = calculateCaloriesLocally(workoutType, duration);
       return NextResponse.json<SuccessResponse>({ calories });
     }
