@@ -33,18 +33,10 @@ const calculateCalories = (workoutType: string, duration: number): number => {
   return Math.round(baseMet * weight * timeInHours);
 };
 
-export const runtime = 'edge';
-
 export async function POST(req: Request) {
-  if (req.method !== 'POST') {
-    return NextResponse.json<ErrorResponse>(
-      { error: 'Method not allowed' },
-      { status: 405 }
-    );
-  }
-
   try {
-    const { workoutType, duration, name }: RequestBody = await req.json();
+    const body = await req.json();
+    const { workoutType, duration, name }: RequestBody = body;
 
     if (!workoutType || !duration || !name) {
       return NextResponse.json<ErrorResponse>(
@@ -56,12 +48,7 @@ export async function POST(req: Request) {
     const calories = calculateCalories(workoutType, duration);
     return NextResponse.json<SuccessResponse>(
       { calories },
-      { 
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      }
+      { status: 200 }
     );
   } catch (error: unknown) {
     console.error('Error:', error);

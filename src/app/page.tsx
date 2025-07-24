@@ -81,11 +81,11 @@ export default function Home() {
       name,
     };
 
-    console.log('Making API request to:', '/api/calculate-calories');
+    console.log('Making API request to:', '/api');
     console.log('Request body:', requestBody);
 
     try {
-      const response = await fetch('/api/calculate-calories', {
+      const response = await fetch('/api', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
