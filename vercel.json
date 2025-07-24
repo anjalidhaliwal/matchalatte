@@ -5,13 +5,17 @@
   "framework": "nextjs",
   "builds": [
     {
-      "src": "next.config.ts",
+      "src": "next.config.js",
       "use": "@vercel/next"
     }
   ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    }
+  ],
   "env": {
-    "NEXT_TELEMETRY_DISABLED": "1",
-    "TYPESCRIPT_STRICT": "false",
-    "ESLINT_STRICT": "false"
+    "NEXT_TELEMETRY_DISABLED": "1"
   }
 } 
